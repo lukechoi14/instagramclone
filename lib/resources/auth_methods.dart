@@ -28,7 +28,7 @@ class AuthMethod {
         UserCredential cred = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
         print(cred.user!.uid);
-
+        //firestore rule read, write 허용
        String photoUrl = await StorageMethods()
             .uploadImageToStorage('profilePics', file);
         // add user to our database
