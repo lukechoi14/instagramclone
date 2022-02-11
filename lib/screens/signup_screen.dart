@@ -20,6 +20,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _bioController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   Uint8List? _image;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -36,6 +37,26 @@ class _SignupScreenState extends State<SignupScreen> {
     setState(() {
       _image = im;
     });
+  }
+  void signUpUser() async{
+      setState(() {
+        _isLoading=true;
+      });
+      String res = await AuthMethod().signUpUser(
+          email: _emailController.text,
+          password: _passwordController.text,
+          username: _usernameController.text,
+          bio: _bioController.text,
+          file: _image!
+      );
+      setState(() {
+        _isLoading=false;
+      });
+      if(res !='success'){
+        showSnackBar(res, context);
+      } else {
+
+      }
   }
 
   @override
@@ -122,19 +143,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
               //button login
               InkWell(
-                onTap: () async {
-                  String res = await AuthMethod().signUpUser(
-                    email: _emailController.text,
-                    password: _passwordController.text,
-                    username: _usernameController.text,
-                    bio: _bioController.text,
-                    file: _image!
-                  );
-
-                  print(res);
-                },
+                onTap: signUpUser,
                 child: Container(
-                  child: const Text("Sign Up"),
+                  child: _isLoading? const Center(child: CircularProgressIndicator(color: primaryColor,),):const Text("Sign Up"),
                   width: double.maxFinite,
                   alignment: Alignment.center,
                   padding: const EdgeInsets.symmetric(vertical: 12),
