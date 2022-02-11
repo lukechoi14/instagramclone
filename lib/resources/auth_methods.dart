@@ -29,7 +29,7 @@ class AuthMethod {
             email: email, password: password);
         print(cred.user!.uid);
         //firestore rule read, write 허용
-       String photoUrl = await StorageMethods()
+        String photoUrl = await StorageMethods()
             .uploadImageToStorage('profilePics', file);
         // add user to our database
         await _firestore.collection('users').doc(cred.user!.uid).set({
@@ -51,6 +51,27 @@ class AuthMethod {
     // }
     catch (e) {
       res = e.toString();
+    }
+    return res;
+  }
+
+  // login user
+  Future<String> loginUser({
+    required String email,
+    required String password
+  }) async {
+    String res = 'Some error occured';
+    try{
+      if(email.isNotEmpty || password.isNotEmpty){
+        await _auth.signInWithEmailAndPassword(email: email, password: password);
+        res = 'success';
+      }
+      else {
+        res = 'please enter all the fields';
+      }
+    } catch(err)
+    {
+      res = err.toString();
     }
     return res;
   }
