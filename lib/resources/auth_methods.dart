@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:instagram_clone/models/user.dart' as model;
 import 'package:instagram_clone/resources/storage_method.dart';
 
 class AuthMethod {
@@ -29,18 +30,21 @@ class AuthMethod {
             email: email, password: password);
         print(cred.user!.uid);
         //firestore rule read, write 허용
-        String photoUrl = await StorageMethods()
-            .uploadImageToStorage('profilePics', file);
+        String photoUrl =
+            await StorageMethods().uploadImageToStorage('profilePics', file);
         // add user to our database
-        await _firestore.collection('users').doc(cred.user!.uid).set({
-          'username': username,
-          'uid': cred.user!.uid,
-          'email': email,
-          'bio': bio,
-          'followers': [],
-          'following': [],
-          'photoUrl': photoUrl,
-        });
+
+        model.User user = model.User(
+          username: username,
+          uid: cred.user!.uid,
+          email: email,
+          photoUrl: photoUrl,
+          bio: bio,
+          followers: [],
+          following: [],
+        );
+
+        await _firestore.collection('users').doc(cred.user!.uid).set(user.toJson());
         res = "success";
       }
     }
@@ -56,21 +60,18 @@ class AuthMethod {
   }
 
   // login user
-  Future<String> loginUser({
-    required String email,
-    required String password
-  }) async {
+  Future<String> loginUser(
+      {required String email, required String password}) async {
     String res = 'Some error occured';
-    try{
-      if(email.isNotEmpty || password.isNotEmpty){
-        await _auth.signInWithEmailAndPassword(email: email, password: password);
+    try {
+      if (email.isNotEmpty || password.isNotEmpty) {
+        await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
         res = 'success';
-      }
-      else {
+      } else {
         res = 'please enter all the fields';
       }
-    } catch(err)
-    {
+    } catch (err) {
       res = err.toString();
     }
     return res;
