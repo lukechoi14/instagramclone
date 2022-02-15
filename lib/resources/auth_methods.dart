@@ -38,7 +38,7 @@ class AuthMethod {
         print(cred.user!.uid);
         //firestore rule read, write 허용
         String photoUrl =
-            await StorageMethods().uploadImageToStorage('profilePics', file);
+            await StorageMethods().uploadImageToStorage('profilePics', file,false);
         // add user to our database
 
         model.User user = model.User(
