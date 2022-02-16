@@ -21,7 +21,7 @@ class FeedScreen extends StatelessWidget {
               onPressed: () {}, icon: const Icon(Icons.messenger_outline))
         ],
       ),
-      body: PostCard(),
+      body: const PostCard(),
     );
   }
 }
