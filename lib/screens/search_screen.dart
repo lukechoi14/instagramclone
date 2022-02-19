@@ -81,10 +81,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     mainAxisSpacing: 8, //수평 Padding
                     crossAxisSpacing: 8, //수직 Padding
                   ),
-                  itemBuilder: (context, index) => GridTile(
-                    child: Image.network(
-                        (snapshot.data! as dynamic).docs[index]['postUrl'],fit: BoxFit.cover,),
-                  ),
+                  itemBuilder: (context, index) => Image.network(
+                      (snapshot.data! as dynamic).docs[index]['postUrl'],fit: BoxFit.cover,),
               );
               // StaggeredGridView.countBuilder(
               //   crossAxisCount: 3,
