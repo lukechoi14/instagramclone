@@ -41,7 +41,7 @@ class _PostCardState extends State<PostCard> {
     } catch (e) {
       showSnackBar(e.toString(), context);
     }
-    setState(() {});
+    // setState(() {});
   }
 
   @override

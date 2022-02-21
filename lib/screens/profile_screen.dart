@@ -1,21 +1,52 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:instagram_clone/utils/colors.dart';
+import 'package:instagram_clone/utils/utils.dart';
 import 'package:instagram_clone/widgets/follow_button.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  final String uid;
+  const ProfileScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  var userData= {};
+  int postLen = 0;
+  int followers = 0;
+  int following = 0;
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
+  getData() async {
+    try{
+      var userSnap = await FirebaseFirestore.instance.collection('users').doc(widget.uid).get();
+      //get post length
+      var postSnap = await FirebaseFirestore.instance.collection('posts').where('uid',isEqualTo: FirebaseAuth.instance.currentUser!.uid).get();
+      postLen = postSnap.docs.length;
+      userData = userSnap.data()!;
+      followers = userSnap.data()!['followers'].length;
+      following = userSnap.data()!['following'].length;
+      setState(() {
+
+      });
+    }
+    catch(e){
+      showSnackBar(e.toString(), context);
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: mobileBackgroundColor,
-        title: Text('username'),
+        title: Text(userData['username']),
       ),
       body: ListView(
         children: [
@@ -25,10 +56,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       backgroundColor: Colors.grey,
                       backgroundImage: NetworkImage(
-                          'https://images.unsplash.com/photo-1644754485076-8d16cf4e77b8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1374&q=80'),
+                         userData['photoUrl']),
                       radius: 40,
                     ),
                     Expanded(
@@ -38,9 +69,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            buildStatColumn(20, 'Post'),
-                            buildStatColumn(40, 'Follower'),
-                            buildStatColumn(10, 'Following'),
+                            buildStatColumn(postLen, 'Post'),
+                            buildStatColumn(followers, 'Follower'),
+                            buildStatColumn(following, 'Following'),
                           ],
                         ),
                         Row(
@@ -62,16 +93,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.only(top:15),
-                  child: Text('username', style: TextStyle(fontWeight: FontWeight.bold),)
+                  child: Text(userData['username'], style: TextStyle(fontWeight: FontWeight.bold),)
                 ),
                 Container(
                     alignment: Alignment.centerLeft,
                     padding: const EdgeInsets.only(top:1),
-                    child: Text('Some description', style: TextStyle(fontWeight: FontWeight.bold),)
+                    child: Text(userData['bio'], style: TextStyle(fontWeight: FontWeight.bold),)
                 )
               ],
             ),
-          )
+          ),
+          Divider()
         ],
       ),
     );
